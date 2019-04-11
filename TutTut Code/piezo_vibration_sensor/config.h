@@ -39,7 +39,7 @@
 // ===                      SERIAL OPTIONS                      === 
 // ================================================================
 // --- Debugging --- 
-#define LOOM_DEBUG    1			// Set to 1 if you want Serial statements from various functions to print
+#define LOOM_DEBUG    0			// Set to 1 if you want Serial statements from various functions to print
 								// NOTE: Serial monitor must be opened for device to setup if this is enabled
 								//   Device will freeze if this in enabled and device does not get plugged into Serial
 								// LOOM_DEBUG_Print* are Serial prints that are removed if debugging is off
@@ -235,7 +235,7 @@
 	#define DEFAULT_MODE      WPA_CLIENT_MODE	// AP_MODE, WPA_CLIENT_MODE or WEP_CLIENT_MODE
 	// #define DEFAULT_NETWORK   "OPEnS"			// Network SSID / name
 	// #define DEFAULT_PASSWORD  "arduino101"		// Network password
-	#define DEFAULT_NETWORK   "The Promenade"			// Network SSID / name
+	#define DEFAULT_NETWORK   "The Promenade"	    // Network SSID / name
 	#define DEFAULT_PASSWORD  "StarGate7SG1"		// Network password
 
 #endif

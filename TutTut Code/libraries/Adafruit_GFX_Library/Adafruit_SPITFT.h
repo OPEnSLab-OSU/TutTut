@@ -195,7 +195,8 @@ class Adafruit_SPITFT : public Adafruit_GFX {
     // before ending the transaction. It's more efficient than starting a
     // transaction every time.
     void         writePixel(int16_t x, int16_t y, uint16_t color);
-    void         writePixels(uint16_t *colors, uint32_t len, bool block=true);
+    void         writePixels(uint16_t *colors, uint32_t len,
+                   bool block=true, bool bigEndian=false);
     void         writeColor(uint16_t color, uint32_t len);
     void         writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h,
                    uint16_t color);
@@ -379,7 +380,7 @@ class Adafruit_SPITFT : public Adafruit_GFX {
     PORTreg_t     dcPort;          ///< PORT register for data/command
 #endif // end HAS_PORT_SET_CLR
 #endif // end USE_FAST_PINIO
-#if !defined(ARDUINO_STM32_FEATHER)
+#if defined(__cplusplus) && (__cplusplus >= 201100)
     union {
 #endif
       struct {                     //   Values specific to HARDWARE SPI:
@@ -452,7 +453,7 @@ class Adafruit_SPITFT : public Adafruit_GFX {
         int8_t    _rd;             ///< Read strobe pin # (or -1)
         bool      wide = 0;        ///< If true, is 16-bit interface
       } tft8;                      ///< Parallel interface settings
-#if !defined(ARDUINO_STM32_FEATHER)
+#if defined(__cplusplus) && (__cplusplus >= 201100)
     };                             ///< Only one interface is active
 #endif
 #if defined(USE_SPI_DMA) // Used by hardware SPI and tft8

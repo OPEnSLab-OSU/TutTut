@@ -50,6 +50,8 @@ class TimeSpan;
 //Other
 #define DYDT 6                     //Day/Date flag bit in alarm Day/Date registers
 
+#define _BV(bit) (1 << (bit))
+
 // Simple general-purpose date/time class (no TZ / DST / leap second handling!)
 class DateTime {
 public:

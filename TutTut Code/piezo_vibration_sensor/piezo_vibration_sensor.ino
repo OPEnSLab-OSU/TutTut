@@ -27,15 +27,15 @@ A0 pin. Check the serial monitor to view the voltage generated.
 #include <Adafruit_SleepyDog.h>
 
 const int PIEZO_PIN = A0; // Piezo output
-const int ledPIN = 13; // LED connected to digital pin 13
+//const int ledPIN = 13; // LED connected to digital pin 13
 
 //float sensorVals[4000];     // create sensor values storage array
 //float sensorAvgs[100];
 //float sensorNumDrops[100];
 //float sensorFreq[100];
-float duration = 5;
+float duration = 30;
 int i = 0;
-int avg = 0;
+float avg = 0.0;
 int n = 0;
 //int f = 0;
 int t = 0;
@@ -44,7 +44,7 @@ float frequency;
 String intensity;
 boolean loopReset = true;
 unsigned long referenceTime = 0;
-int ledState = LOW; // variable used to store the last LED status, to toggle the light
+//int ledState = LOW; // variable used to store the last LED status, to toggle the light
 boolean raining = true;
 
 // ================================================================ 
@@ -53,12 +53,9 @@ boolean raining = true;
 void setup() 
 {
   // LOOM_begin calls any relevant (based on config) LOOM device setup functions
-  Loom_begin(); 
-  //WiFi.setPins(8,7,4,2);
-  pinMode(ledPIN, OUTPUT); // declare the ledPin as the OUTPUT
-  digitalWrite(ledPIN, HIGH); // Show device is awake
+  Loom_begin();
+  digitalWrite(LED_BUILTIN, HIGH); // Show device is awake
   Serial.begin(9600);
-  //attachInterrupt(PIEZO_PIN, wakeUpNow, LOW);
 }
 
 // ================================================================ 
@@ -260,13 +257,26 @@ void loop()
 
 void gather_data(){
   float sensorVals[4000];
-  if(raining == false){
-    digitalWrite(ledPIN, LOW); // Show device is asleep
-    attachInterrupt(PIEZO_PIN, wakeUpNow, RISING);
-    int sleepMS = Watchdog.sleep();
-    detachInterrupt(A0);
+  while(raining == false){
+    digitalWrite(LED_BUILTIN, LOW); // Show device is asleep
+    sleep_for(1, MINUTES, SLEEPYDOG); // Go to sleep for X minutes
+    digitalWrite(LED_BUILTIN, HIGH); // Show device is awake
+    //delay(10000);
+
+    int counter = 0;
+    while(counter < 500){
+      int piezoADC = analogRead(PIEZO_PIN);
+      float piezoV = piezoADC / 1023.0 * 5.0;
+      if(piezoV > .95) {
+        Serial.println(piezoV); // Print the voltage. 
+        delay(1000);
+        raining = true;
+        break;
+      }
+      counter++;
+    }
   }
-  else if(raining == true){
+  if(raining == true){
     if(loopReset){
       referenceTime = millis()/1000;
     }
@@ -275,8 +285,8 @@ void gather_data(){
         // Read Piezo ADC value in, and convert it to a voltage
         int piezoADC = analogRead(PIEZO_PIN);
         float piezoV = piezoADC / 1023.0 * 5.0;
-        if(piezoV > .1) {
-          Serial.println(piezoV); // Print the voltage.
+        if(piezoV > .95) {
+          Serial.println(piezoV); // Print the voltage. 
           sensorVals[i] = piezoV;
           i++;
           delay(100);
@@ -284,41 +294,42 @@ void gather_data(){
         loopReset = false;
       }
       else if(call_timer(0, duration) == false){
+        Serial.println("START OF TEMP");
+        Serial.println(i);
         float temp = sensorVals[0];
-        for(int j = 0; j < i; j++){
-          temp = temp + sensorVals[j+1];
+        Serial.println(temp);
+        if(i > 1){
+          for(int j = 0; j < (i - 1); j++){
+            temp = temp + sensorVals[j+1];
+            Serial.println(temp);
+          }
         }
-        average = temp / (i + 1);
-        frequency = ((i+1)/duration);
-        switch(average){
-          case (0 < average && average <= 35): intensity = String("Light");
-          case (35 < average && average <= 50): intensity = String("Medium");
-          case (50 < average && average <= 100): intensity = String("Heavy");
+        average = temp / i;
+        Serial.println(temp/i);
+        Serial.println(average);
+        frequency = (i/duration);
+        if(i == 0){
+          average = 0.0;
+          frequency = 0.0;
+          raining = false;
         }
-        //sensorAvgs[avg] = average;
-        //sensorNumDrops[n] = (i+1);
-        //sensorFreq[f] = ((i+1)/duration);
-        //f++;
-        //n++;
-        //avg++;
+        if(average == 0){
+          intensity = String("Rain Free");
+        }
+        else if(0 < average && average <= 2.0){
+          intensity = String("Light");
+        }
+        else if(2.0 < average && average <= 4.0){
+          intensity = String("Medium");
+        }
+        else if(4.0 < average && average <= 8.0){
+          intensity = String("Heavy");
+        }
         i = 0;
+        sensorVals[0] = 0;
         loopReset = true;
       }
     }while(loopReset == false);
-//    if(avg == 10){
-//      for(int a = 0; a < 10; a++){
-//        Serial.println(sensorAvgs[a]);
-//      }
-//      Serial.println("----------------------");
-//      for(int b = 0; b < 10; b++){
-//        Serial.println(sensorNumDrops[b]);
-//      }
-//      Serial.println("----------------------");
-//      for(int c = 0; c < 10; c++){
-//        Serial.println(sensorFreq[c]);
-//      }
-//      avg = 0;
-//    }
   }
 }
 
@@ -333,9 +344,4 @@ boolean call_timer(int start, int duration){
   else{
     return false;
   }
-}
-
-void wakeUpNow(){
-  digitalWrite(ledPIN, HIGH); // Show device is awake
-  raining = true;
 }
