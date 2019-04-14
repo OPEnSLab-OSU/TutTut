@@ -1,6 +1,6 @@
 /******************************************************************************
 Tut-Tut_Piezo_Vibration_Sensor.ino
-Jonathan Rohr
+Jonathan Rohr, Michael Gillett, Shreyans Khunteta
 February 24, 2019
 
 - Connect a 1Mohm resistor across the Piezo sensor's pins.
@@ -9,6 +9,9 @@ February 24, 2019
 
 Vibrations on the Piezo sensor create voltage, which are sensed by the Arduino's
 A0 pin. Check the serial monitor to view the voltage generated.
+
+Frequency, Intensity, and the Average drop impact voltage are all recorded and sent 
+to a Google Sheet through the PushingBox API.
 ******************************************************************************/
 
 // ================================================================
@@ -23,28 +26,15 @@ A0 pin. Check the serial monitor to view the voltage generated.
 // on options specified in the above config
 #include "loom_preamble.h"
 
-#include "arduino_secrets.h"
-#include <Adafruit_SleepyDog.h>
-
 const int PIEZO_PIN = A0; // Piezo output
-//const int ledPIN = 13; // LED connected to digital pin 13
 
-//float sensorVals[4000];     // create sensor values storage array
-//float sensorAvgs[100];
-//float sensorNumDrops[100];
-//float sensorFreq[100];
-float duration = 30;
+float duration = 120; // Specify the duration of time you want to record rainfall (in seconds)
 int i = 0;
-float avg = 0.0;
-int n = 0;
-//int f = 0;
-int t = 0;
 float average;
 float frequency;
 String intensity;
 boolean loopReset = true;
 unsigned long referenceTime = 0;
-//int ledState = LOW; // variable used to store the last LED status, to toggle the light
 boolean raining = true;
 
 // ================================================================ 
@@ -67,14 +57,14 @@ void loop()
   measure_sensors();
   package_data(&send_bndl);
 
-  gather_data();
+  gather_data(); // Gather the data from the sensor and record the results
 
-  append_to_bundle_key_value(&send_bndl, "Average", average);
-  append_to_bundle_key_value(&send_bndl, "Frequency", frequency);
-  append_to_bundle_key_value(&send_bndl, "Intensity", intensity);
+  append_to_bundle_key_value(&send_bndl, "Average", average); // Add the average value to the bundle
+  append_to_bundle_key_value(&send_bndl, "Frequency", frequency); // Add the frequency value to the bundle
+  append_to_bundle_key_value(&send_bndl, "Intensity", intensity); // Add the intensity value to the bundle
   
   print_bundle(&send_bndl);
-  log_bundle(&send_bndl, PUSHINGBOX);
+  log_bundle(&send_bndl, PUSHINGBOX); // Send the bundle to the Google Sheet using the PushingBox API
   additional_loop_checks();
 }
 
@@ -257,30 +247,34 @@ void loop()
 
 void gather_data(){
   float sensorVals[4000];
+  // If it is not raining, go to sleep for X minutes
   while(raining == false){
     digitalWrite(LED_BUILTIN, LOW); // Show device is asleep
-    sleep_for(1, MINUTES, SLEEPYDOG); // Go to sleep for X minutes
+    sleep_for(2, MINUTES, SLEEPYDOG); // Go to sleep for X minutes
     digitalWrite(LED_BUILTIN, HIGH); // Show device is awake
     //delay(10000);
 
+    // After coming out of sleep, check to see if it is raining
     int counter = 0;
-    while(counter < 500){
+    while(counter < 1000){
       int piezoADC = analogRead(PIEZO_PIN);
       float piezoV = piezoADC / 1023.0 * 5.0;
       if(piezoV > .95) {
         Serial.println(piezoV); // Print the voltage. 
-        delay(1000);
         raining = true;
         break;
       }
+      delay(1000);
       counter++;
     }
   }
+  // If it is raining, gather data
   if(raining == true){
     if(loopReset){
       referenceTime = millis()/1000;
     }
     do{
+      // If timer is running, gather data and store data in array
       if(call_timer(0, duration) == true){
         // Read Piezo ADC value in, and convert it to a voltage
         int piezoADC = analogRead(PIEZO_PIN);
@@ -293,38 +287,41 @@ void gather_data(){
         }
         loopReset = false;
       }
+      // If timer is done running, calculate the average, frequency, and intensity
       else if(call_timer(0, duration) == false){
-        Serial.println("START OF TEMP");
-        Serial.println(i);
         float temp = sensorVals[0];
-        Serial.println(temp);
+        // Add all values from the sensorVals array
         if(i > 1){
           for(int j = 0; j < (i - 1); j++){
             temp = temp + sensorVals[j+1];
-            Serial.println(temp);
           }
         }
+        // Divide the added up values by the number of values in the array to calculate the average
         average = temp / i;
-        Serial.println(temp/i);
-        Serial.println(average);
+        // Divide the number of values in the array by the duration of the timer to calculate the frequency
         frequency = (i/duration);
+
+        // If there is no values in the array, then it is no longer raining
         if(i == 0){
           average = 0.0;
           frequency = 0.0;
           raining = false;
         }
+        
+        // Calculate the intensity by comparing the average to set ranges of values
         if(average == 0){
           intensity = String("Rain Free");
         }
-        else if(0 < average && average <= 2.0){
+        else if(0 < average && average <= 1.0){
           intensity = String("Light");
         }
-        else if(2.0 < average && average <= 4.0){
+        else if(1.0 < average && average <= 1.25){
           intensity = String("Medium");
         }
-        else if(4.0 < average && average <= 8.0){
+        else if(1.25 < average && average <= 2.0){
           intensity = String("Heavy");
         }
+        
         i = 0;
         sensorVals[0] = 0;
         loopReset = true;
@@ -333,7 +330,7 @@ void gather_data(){
   }
 }
 
-
+// Timer function that runs for the specified duration
 boolean call_timer(int start, int duration){
   unsigned long timer = millis()/1000;
   unsigned long startTime = referenceTime + start;
