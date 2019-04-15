@@ -4,6 +4,10 @@ Step 1: Navigate to https://www.arduino.cc/en/Main/Software and select the appro
 
 Step 2: Install the latest Arduino IDE version.
 
+Tut Tut Installation Guide Command Line On Linux
+
+Step 1: Go to Arduino site and follow the necessary steps listed: https://www.arduino.cc/en/guide/linux
+
 Remaining steps based on Windows version
 
 Step 3: By default, the installation will place an Arduino folder in the Documents System Folder. Other destinations can be specified during the installation.
@@ -21,3 +25,5 @@ Step 8: Where it says Board: "XXXXX", select Adafruit Feather M0 from the additi
 Step 9: Now press the upload button (Right Arrow) to compile and upload the sketch to the microcontroller in the TutTut Device.
 
 Step 10: The code should start immediately after the upload is complete and will continue to run unless disconnected from power. The USB can now be disconnected and the battery can be connected.
+
+
