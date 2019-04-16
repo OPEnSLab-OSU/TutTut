@@ -41,7 +41,7 @@
 
 {\Large Abstract}
 \end{center}
-Tut-Tut, the IoT Raindrop Detector, is a project under the domain of the OPEnS (Openly Published Environment Sensing) Lab at Oregon State University. Tut-Tut will be able to detect a drop of any size, get an idea of the raindrop mass from the intensity at which it falls, and detect the frequency of raindrops. After Tut-Tut gathers this data, it will be able to wirelessly transmit the information to a central server and communicate it to other IoT devices around Oregon State University. The detector will wake up with a single raindrop and will stay awake as long as rain is detected within a minute. If it does not detect raindrops within a minute, it will go back to sleep. In addition to the physical device, we will also design an online mobile application to which the physical device will transmit information about the raindrops.
+Tut-Tut, the IoT Raindrop Detector, is a project under the domain of the OPEnS (Openly Published Environment Sensing) Lab at Oregon State University. Tut-Tut will be able to detect a raindrop of any size, get an idea of the drop's mass from the intensity at which it falls, and detect the frequency of raindrops. After Tut-Tut gathers this data, it will be able to wirelessly transmit the information to a central server and communicate it to other IoT devices around Oregon State University. The detector will periodically wake up to check for rain and will stay awake as long as rain is detected within two minutes. If it does not detect raindrops within two minutes, it will go back to sleep. As a stretch goal, we will design an online mobile application to which the physical device will transmit information about the raindrops. If this stretch goal is not met, then the data will be stored in a Google Sheet.
 \vspace*{\fill}
 \end{titlepage}
 
@@ -58,7 +58,7 @@ This document intends to guide development of Tut-Tut over the course of 7 month
 \end{enumerate}
 
 \subsection{Target Audience}
-This product is designed to accommodate any person(s) who may want to know about rainfall metrics in their area. The sensor will provide real-time information about the size of the rain drops and how frequently they are falling. These metrics could be used by meteorologist as a way to show more detailed information about the rain in the local area. Furthermore, the Tut-Tut Rainfall Detector will link into the OPEnS lab's larger ecosystem of environmental devices and sensors, known as Loom.
+This product is designed to accommodate any person(s) who may want to know about rainfall metrics in their area. The sensor will provide real-time information about the relative intensity of the rain based on the impacts of the drops and how frequently they are falling. These metrics could be used by meteorologist as a way to show more detailed information about the rain in the local area. Furthermore, the Tut-Tut Rainfall Detector will link into the OPEnS lab's larger ecosystem of environmental devices and sensors, known as Loom.
 
 \subsection{Project Scope}
 %describes the expectations of the product if it were to hit the market, e.g. what must be done to deliver the working product
@@ -83,7 +83,7 @@ The thought behind this product's development is that the Loom network managed b
 
 \subsection{Product Functions}
 %What does it do? Main functions
-The main functions of this raindrop detector are that it can detect raindrop size, frequency rate and intensity. It also will link up with the network of IoT devices maintained by the OPEnS lab. It will also upload its data to a central server where the information can be viewed in an Excel document.
+The main functions of this raindrop detector are that it can detect raindrop impacts, frequency rate and relative intensity of the rainfall based on the raindrop impacts. It also will link up with the network of IoT devices maintained by the OPEnS lab. It will also upload its data to a central server where the information can be viewed in a Google Sheet. It will need to go to sleep while it is not raining so that the battery does not drain.
 
 \subsection{End User Characteristics}
 %What would someone using the final product expect from it? Who would that person be? Do they need a technical background or can they use it right away with no prior knowledge of its development?
@@ -115,11 +115,11 @@ This section of the document lists specific requirements for Tut-Tut. Requiremen
 
 \subsection{User Requirements}
 %Minimal, since the information will be understood by everyone
-The user will, provided our stretch goal is met, be anyone. The information will be easily accessible and understandable. Even if our stretch goal isn't met, we will still display our data gathered in an Excel document that should be able to be understood by anyone.
+The user will, provided our stretch goal is met, be anyone. The information will be easily accessible and understandable. Even if our stretch goal isn't met, we will still display our data gathered in a Google Sheet that should be able to be understood by anyone.
 
 \subsection{System Requirements}
 %2x2 inch sensor capable of detecting even the most minute amounts of rain, wifi or network capabilities, able to be integrated with mesh network, waterproof
-The system will be a 2x2 inch waterproof sensor capable of detecting even the most minute amounts of rain. It will have wi-fi or network capabilities and we will be able to integrate it easily with the IoT mesh network around the university. It will be able to detect the size of a raindrop, the frequency at which rain is falling, and the intensity at which it hits the detector.
+The system will be a 2x2 inch weather resistant sensing area capable of detecting even the most minute amounts of rain. It will have wi-fi or network capabilities and we will be able to integrate it easily with the IoT mesh network around the university. It will be able to detect the raindrop impacts, the frequency at which rain is falling, and the intensity at which it hits the detector. The device will also need to go to sleep while it is not raining to conserve battery. It will awaken when it can detect rain falling and will continue gathering data.
 
 \subsection{Interface Requirements}
 %needs to be accessible and give accurate or clear information. Perhaps in the form of a generated map visual, or a twitter bot.
@@ -129,7 +129,7 @@ The interface for the mobile application, if the stretch goal isn't met, will ju
 %Chart outlining the timeline of this project. Term one is design, Term two is bulding, and Term 3 is testing. That's my only information
 
 
-\includegraphics[scale=0.55]{GanttChart.eps}
+\includegraphics[scale=0.55]{GanttChart.png}
 \newline
 
 
