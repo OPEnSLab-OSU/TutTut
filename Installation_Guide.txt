@@ -8,7 +8,7 @@ Remaining steps based on Windows version
 
 Step 3: By default, the installation will place an Arduino folder in the Documents System Folder. Other destinations can be specified during the installation.
 
-Step 4: Move the libraries and piezo_vibration_sensor folders from the Tut-Tut Code folder of this repository into the Arduino folder at your specified destination.
+Step 4: Move the libraries and piezo_vibration_sensor folders from the TutTut_Code folder of this repository into the Arduino folder at your specified destination.
 
 Step 5: Move into the piezo_vibration_sensor folder and open the piezo_vibration_sensor.ino file. This will launch the Arduino IDE.
 
