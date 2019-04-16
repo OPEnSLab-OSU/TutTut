@@ -1,6 +1,6 @@
 Tut-Tut Installation Guide
 
-Step 1: Navigate to https://www.arduino.cc/en/Main/Software and select the appropriate download based on your operating system. 
+Step 1: Navigate to https://www.arduino.cc/en/Main/Software and select the appropriate download based on your operating system.
 
 Step 2: Install the latest Arduino IDE version.
 
