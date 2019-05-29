@@ -39,7 +39,8 @@
 // ===                      SERIAL OPTIONS                      === 
 // ================================================================
 // --- Debugging --- 
-#define LOOM_DEBUG    0			// Set to 1 if you want Serial statements from various functions to print
+#define LOOM_DEBUG    0
+// Set to 1 if you want Serial statements from various functions to print
 								// NOTE: Serial monitor must be opened for device to setup if this is enabled
 								//   Device will freeze if this in enabled and device does not get plugged into Serial
 								// LOOM_DEBUG_Print* are Serial prints that are removed if debugging is off
@@ -235,8 +236,8 @@
 	#define DEFAULT_MODE      WPA_CLIENT_MODE	// AP_MODE, WPA_CLIENT_MODE or WEP_CLIENT_MODE
 	// #define DEFAULT_NETWORK   "OPEnS"			// Network SSID / name
 	// #define DEFAULT_PASSWORD  "arduino101"		// Network password
-	#define DEFAULT_NETWORK   "The Promenade"	    // Network SSID / name
-	#define DEFAULT_PASSWORD  "StarGate7SG1"		// Network password
+  #define DEFAULT_NETWORK   "TutTut"     // Network SSID / name
+  #define DEFAULT_PASSWORD  "12345432"    // Network password
 
 #endif
 
@@ -539,7 +540,7 @@
 		#define init_tab_id "HubSheet3" 	   // Defines tab if hub is defining tab instead of nodes
 	#else 					
 		// Use bundle source and below prefix to define tab ID
-		#define init_tab_id "Test1_"		   // Used as a prefix if node is being used to define tab
+		#define init_tab_id "Test4_"		   // Used as a prefix if node is being used to define tab
 	#endif	
 
 

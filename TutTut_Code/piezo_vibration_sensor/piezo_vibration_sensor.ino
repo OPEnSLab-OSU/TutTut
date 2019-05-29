@@ -28,7 +28,7 @@ to a Google Sheet through the PushingBox API.
 
 const int PIEZO_PIN = A0; // Piezo output
 
-float duration = 120; // Specify the duration of time you want to record rainfall (in seconds)
+float duration = 120 ; // Specify the duration of time you want to record rainfall (in seconds)
 int i = 0;
 float average;
 float frequency;
@@ -248,7 +248,7 @@ void loop()
 void gather_data(){
   float sensorVals[4000];
   // If it is not raining, go to sleep for X minutes
-  while(raining == false){
+  if(raining == false){
     digitalWrite(LED_BUILTIN, LOW); // Show device is asleep
     sleep_for(2, MINUTES, SLEEPYDOG); // Go to sleep for X minutes
     digitalWrite(LED_BUILTIN, HIGH); // Show device is awake
@@ -256,15 +256,16 @@ void gather_data(){
 
     // After coming out of sleep, check to see if it is raining
     int counter = 0;
-    while(counter < 1000){
+    while(counter < 300){
       int piezoADC = analogRead(PIEZO_PIN);
-      float piezoV = piezoADC / 1023.0 * 5.0;
-      if(piezoV > .95) {
+      //3.3v / 4096bits * piezoADC = Piezo volts
+      float piezoV = (3.3 / 4096) * piezoADC;
+      if(piezoV > .26) {
         Serial.println(piezoV); // Print the voltage. 
         raining = true;
         break;
       }
-      delay(1000);
+      delay(100);
       counter++;
     }
   }
@@ -278,12 +279,13 @@ void gather_data(){
       if(call_timer(0, duration) == true){
         // Read Piezo ADC value in, and convert it to a voltage
         int piezoADC = analogRead(PIEZO_PIN);
-        float piezoV = piezoADC / 1023.0 * 5.0;
-        if(piezoV > .95) {
+        //3.3v / 4096bits * piezoADC = Piezo volts
+        float piezoV = (3.3 / 4096) * piezoADC;
+        if(piezoV > .26) {
           Serial.println(piezoV); // Print the voltage. 
           sensorVals[i] = piezoV;
           i++;
-          delay(100);
+          delay(150);
         }
         loopReset = false;
       }
@@ -296,29 +298,33 @@ void gather_data(){
             temp = temp + sensorVals[j+1];
           }
         }
-        // Divide the added up values by the number of values in the array to calculate the average
-        average = temp / i;
-        // Divide the number of values in the array by the duration of the timer to calculate the frequency
-        frequency = (i/duration);
-
+        
         // If there is no values in the array, then it is no longer raining
         if(i == 0){
           average = 0.0;
           frequency = 0.0;
           raining = false;
         }
-        
-        // Calculate the intensity by comparing the average to set ranges of values
-        if(average == 0){
-          intensity = String("Rain Free");
+        else{
+          // Divide the added up values by the number of values in the array to calculate the average
+          average = temp / i;
+          // Divide the number of values in the array by the duration of the timer to calculate the frequency
+          frequency = (i/duration);
         }
-        else if(0 < average && average <= 1.0){
+
+        float product = average * frequency;
+        
+        // Calculate the intensity by comparing the product of the average and frequency to set ranges of values
+        if(average == 0){
+          intensity = String("RainFree");
+        }
+        else if(0 < product && product <= .5){
           intensity = String("Light");
         }
-        else if(1.0 < average && average <= 1.25){
+        else if(.5 < product && product <= 1.0){
           intensity = String("Medium");
         }
-        else if(1.25 < average && average <= 2.0){
+        else if(1.0 < product){
           intensity = String("Heavy");
         }
         
